@@ -257,7 +257,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.apiKey.style.borderColor = '#28a745';
       } else {
         console.error('❌ API Key validation failed:', response.error);
-        showStatus(`API Key验证失败: ${response.error}`, 'error');
+
+        // Special handling for different error types
+        if (response.error.includes('余额不足') || response.error.includes('Insufficient Balance')) {
+          showStatus(`💰 账户余额不足，请前往充值`, 'error');
+        } else if (response.error.includes('API密钥') || response.error.includes('invalid') || response.error.includes('unauthorized')) {
+          showStatus(`🔑 API Key无效，请检查`, 'error');
+        } else if (response.error.includes('频率过高') || response.error.includes('rate limit')) {
+          showStatus(`⏱️ 请求过于频繁，请稍后再试`, 'error');
+        } else {
+          showStatus(`API Key验证失败: ${response.error}`, 'error');
+        }
+
         elements.apiKey.style.borderColor = '#dc3545';
       }
     } catch (error) {
@@ -302,7 +313,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (response.error) {
         console.error('❌ Translation test failed:', response.error);
-        showStatus(`${apiProvider === 'gemini' ? 'Gemini' : 'DeepSeek'}翻译测试失败: ${response.error}`, 'error');
+
+        // Special handling for balance issues
+        if (response.error.includes('余额不足') || response.error.includes('Insufficient Balance')) {
+          showStatus(`💰 ${apiProvider === 'gemini' ? 'Gemini' : 'DeepSeek'}账户余额不足，请前往充值`, 'error');
+        } else if (response.error.includes('API密钥') || response.error.includes('invalid')) {
+          showStatus(`🔑 ${apiProvider === 'gemini' ? 'Gemini' : 'DeepSeek'} API密钥无效，请检查`, 'error');
+        } else if (response.error.includes('频率过高') || response.error.includes('rate limit')) {
+          showStatus(`⏱️ 请求过于频繁，请稍后再试`, 'error');
+        } else {
+          showStatus(`${apiProvider === 'gemini' ? 'Gemini' : 'DeepSeek'}翻译测试失败: ${response.error}`, 'error');
+        }
       } else {
         console.log('✅ Translation test successful:', response.translation);
         showStatus(`${apiProvider === 'gemini' ? 'Gemini' : 'DeepSeek'}翻译测试成功: "${response.translation}"`, 'success');

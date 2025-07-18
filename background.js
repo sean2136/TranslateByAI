@@ -230,24 +230,45 @@ async function fetchWithRetry(url, options, maxRetries = 3) {
 
 // Get user-friendly error messages
 function getApiErrorMessage(status, errorText) {
+  // First check for specific error messages in the response text
+  if (errorText) {
+    if (errorText.includes('Insufficient Balance') || errorText.includes('insufficient_balance')) {
+      return '💰 DeepSeek账户余额不足，请前往 https://platform.deepseek.com 充值';
+    }
+    if (errorText.includes('quota exceeded') || errorText.includes('rate limit')) {
+      return '⏱️ API调用配额已用完，请稍后再试或升级账户';
+    }
+    if (errorText.includes('invalid api key') || errorText.includes('unauthorized')) {
+      return '🔑 API密钥无效，请检查您的DeepSeek API Key';
+    }
+  }
+
   switch (status) {
     case 401:
-      return 'API密钥无效或已过期，请检查您的DeepSeek API Key';
+      return '🔑 API密钥无效或已过期，请检查您的DeepSeek API Key';
     case 403:
-      return 'API访问被拒绝，请检查您的账户权限';
+      return '🚫 API访问被拒绝，请检查您的账户权限';
     case 429:
-      return 'API请求频率过高，请稍后再试';
+      return '⏱️ API请求频率过高，请稍后再试';
     case 500:
     case 502:
     case 503:
     case 504:
-      return 'DeepSeek服务暂时不可用，请稍后再试';
+      return '🔧 DeepSeek服务暂时不可用，请稍后再试';
     default:
       try {
         const errorData = JSON.parse(errorText);
-        return errorData.error?.message || `API错误 (${status})`;
+        const message = errorData.error?.message || errorData.message;
+        if (message) {
+          // Check for balance issues in the parsed message
+          if (message.includes('Insufficient Balance') || message.includes('insufficient_balance')) {
+            return '💰 DeepSeek账户余额不足，请前往 https://platform.deepseek.com 充值';
+          }
+          return `❌ ${message}`;
+        }
+        return `❌ API错误 (${status})`;
       } catch {
-        return `API请求失败 (${status})`;
+        return `❌ API请求失败 (${status})`;
       }
   }
 }
