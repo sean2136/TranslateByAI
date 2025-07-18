@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕显示调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007cba;
+        }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .code {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #005a8b;
+        }
+        .test-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .mock-video {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #333, #666);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        #test-subtitle-container {
+            position: absolute !important;
+            bottom: 80px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 99999 !important;
+            pointer-events: none !important;
+            text-align: center !important;
+            max-width: 80% !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 字幕显示调试工具</h1>
+    
+    <div class="debug-section success">
+        <h2>✅ 修复内容</h2>
+        <p>基于您的反馈，我已经修复了以下问题：</p>
+        <ul>
+            <li><strong>字幕容器可见性</strong>：增加了更强的CSS样式，使用!important确保显示</li>
+            <li><strong>测试消息增强</strong>：红色背景+黄色边框，更容易看到</li>
+            <li><strong>API Key处理</strong>：没有API Key时显示模拟翻译而不是错误</li>
+            <li><strong>调试日志增强</strong>：添加了更详细的控制台输出</li>
+        </ul>
+    </div>
+
+    <div class="debug-section warning">
+        <h2>🧪 本地测试</h2>
+        <p>在重新加载插件之前，您可以在这里测试字幕显示效果：</p>
+        
+        <div class="test-container">
+            <div class="mock-video">
+                🎥 模拟视频播放器
+            </div>
+            <div id="test-subtitle-container"></div>
+        </div>
+        
+        <button onclick="showTestSubtitle()">显示测试字幕</button>
+        <button onclick="showMockTranslation()">显示模拟翻译</button>
+        <button onclick="clearSubtitles()">清除字幕</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>🔄 重新加载插件步骤</h2>
+        <ol>
+            <li>打开 <code>chrome://extensions/</code></li>
+            <li>找到 "AI Video Translator" 插件</li>
+            <li>点击刷新按钮 🔄</li>
+            <li>重新访问 YouTube 页面</li>
+            <li>开启翻译功能</li>
+        </ol>
+    </div>
+
+    <div class="debug-section">
+        <h2>🔍 预期的新行为</h2>
+        <p>重新加载插件后，您应该看到：</p>
+        
+        <h3>1. 增强的测试消息</h3>
+        <div class="code">
+红色背景 + 黄色边框的测试消息：
+"🤖 AI翻译已准备就绪 - 测试消息"
+显示5秒后自动消失
+        </div>
+        
+        <h3>2. 模拟翻译功能</h3>
+        <div class="code">
+没有API Key时显示：
+"[模拟翻译] 原始英文字幕内容"
+而不是错误信息
+        </div>
+        
+        <h3>3. 详细的控制台日志</h3>
+        <div class="code">
+📝 Found caption elements: 2
+📄 Caption text: Hello world
+🔄 Attempting to translate: Hello world
+🧪 No API key configured, using mock translation
+🎬 Displaying translation: [模拟翻译] Hello world
+✅ Translation displayed in container
+        </div>
+    </div>
+
+    <div class="debug-section error">
+        <h2>🚨 如果仍然看不到字幕</h2>
+        <p>请尝试以下调试步骤：</p>
+        
+        <h3>在YouTube页面控制台中运行：</h3>
+        <div class="code">
+// 检查字幕容器是否存在
+const container = document.getElementById('ai-translator-subtitles');
+console.log('Container found:', container);
+
+// 检查容器样式
+if (container) {
+    console.log('Container styles:', window.getComputedStyle(container));
+    console.log('Container position:', container.getBoundingClientRect());
+}
+
+// 手动添加测试字幕
+if (container) {
+    container.innerHTML = `
+        &lt;div style="background: red !important; color: white !important; 
+                     padding: 20px !important; font-size: 20px !important;"&gt;
+            手动测试字幕
+        &lt;/div&gt;
+    `;
+}
+        </div>
+        
+        <h3>检查视频容器：</h3>
+        <div class="code">
+// 检查视频容器
+const videoContainer = document.querySelector('.html5-video-player');
+console.log('Video container:', videoContainer);
+console.log('Video container position:', videoContainer ? videoContainer.style.position : 'not found');
+        </div>
+    </div>
+
+    <script>
+        function showTestSubtitle() {
+            const container = document.getElementById('test-subtitle-container');
+            container.innerHTML = `
+                <div style="
+                    background: rgba(255, 0, 0, 0.9) !important;
+                    color: white !important;
+                    padding: 12px 20px !important;
+                    border-radius: 6px !important;
+                    display: inline-block !important;
+                    margin: 4px !important;
+                    font-size: 18px !important;
+                    font-weight: bold !important;
+                    border: 2px solid yellow !important;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.5) !important;
+                ">
+                    🤖 AI翻译已准备就绪 - 测试消息
+                </div>
+            `;
+        }
+        
+        function showMockTranslation() {
+            const container = document.getElementById('test-subtitle-container');
+            container.innerHTML = `
+                <div style="
+                    background: rgba(0, 0, 0, 0.9) !important;
+                    color: #ffffff !important;
+                    padding: 10px 16px !important;
+                    border-radius: 6px !important;
+                    display: inline-block !important;
+                    margin: 4px !important;
+                    font-size: 16px !important;
+                    font-family: Arial, sans-serif !important;
+                    font-weight: bold !important;
+                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+                ">
+                    [模拟翻译] Hello, this is a test subtitle
+                </div>
+            `;
+        }
+        
+        function clearSubtitles() {
+            const container = document.getElementById('test-subtitle-container');
+            container.innerHTML = '';
+        }
+    </script>
+</body>
+</html>

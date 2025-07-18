@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态Gemini模型检测</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .feature-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .warning-section {
+            background: #fff3cd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .model-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .model-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .model-version {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .v2-5 { color: #e91e63; }
+        .v2-0 { color: #9c27b0; }
+        .v1-5 { color: #3f51b5; }
+        .code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-available { background: #28a745; }
+        .status-experimental { background: #ffc107; }
+        .status-fallback { background: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 动态Gemini模型检测</h1>
+        
+        <div class="feature-section">
+            <h2>🚀 智能模型检测系统</h2>
+            <p>插件现已支持动态检测最新可用的Gemini模型，包括未来发布的Gemini 2.5 Pro等新模型！</p>
+            
+            <div class="highlight">
+                <strong>🎯 核心特性：</strong>
+                <ul>
+                    <li>实时检测Google最新发布的Gemini模型</li>
+                    <li>自动按性能优先级排序（2.5 > 2.0 > 1.5）</li>
+                    <li>智能回退机制，确保兼容性</li>
+                    <li>支持未来模型，无需手动更新</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>📋 当前支持的模型范围</h2>
+            
+            <div class="model-grid">
+                <div class="model-card">
+                    <div class="model-version v2-5">Gemini 2.5 系列</div>
+                    <p><span class="status-indicator status-experimental"></span>实验性支持</p>
+                    <small>一旦Google发布，将自动检测并优先使用</small>
+                </div>
+                <div class="model-card">
+                    <div class="model-version v2-0">Gemini 2.0 系列</div>
+                    <p><span class="status-indicator status-available"></span>完全支持</p>
+                    <small>包括Flash、Thinking等变体</small>
+                </div>
+                <div class="model-card">
+                    <div class="model-version v1-5">Gemini 1.5 系列</div>
+                    <p><span class="status-indicator status-available"></span>稳定支持</p>
+                    <small>Pro、Flash等成熟模型</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>🔄 动态检测工作流程</h3>
+            <ol>
+                <li><strong>API调用时</strong>：首先尝试获取最新可用模型列表</li>
+                <li><strong>智能排序</strong>：按版本号和模型类型自动排序</li>
+                <li><strong>优先级测试</strong>：从最新最强的模型开始尝试</li>
+                <li><strong>自动回退</strong>：如果最新模型不可用，自动使用次优选择</li>
+                <li><strong>缓存优化</strong>：成功的模型会被优先记住</li>
+            </ol>
+        </div>
+
+        <div class="warning-section">
+            <h3>⚠️ 关于Gemini 2.5 Pro</h3>
+            <p><strong>当前状态</strong>：Google尚未正式发布Gemini 2.5 Pro模型。</p>
+            
+            <div class="highlight">
+                <strong>🔮 未来支持：</strong>
+                <ul>
+                    <li>插件已预配置支持Gemini 2.5系列</li>
+                    <li>一旦Google发布，将自动检测并使用</li>
+                    <li>无需手动更新插件代码</li>
+                    <li>智能优先级确保使用最佳可用模型</li>
+                </ul>
+            </div>
+            
+            <p><strong>建议</strong>：目前推荐使用Gemini 2.0 Flash，性能已经非常优秀。</p>
+        </div>
+
+        <div class="info-section">
+            <h2>🧪 测试步骤</h2>
+            
+            <h3>1. 重新加载插件</h3>
+            <button onclick="openExtensions()">打开扩展程序页面</button>
+            <p>刷新插件以应用动态模型检测功能</p>
+            
+            <h3>2. 验证API Key</h3>
+            <button onclick="openGeminiAPI()">获取Gemini API Key</button>
+            <p>确保您的API Key有访问最新模型的权限</p>
+            
+            <h3>3. 观察模型检测过程</h3>
+            <ol>
+                <li>在插件设置中选择"Google Gemini"</li>
+                <li>输入API Key并测试翻译</li>
+                <li>打开浏览器控制台观察模型检测日志</li>
+                <li>查看实际使用的模型名称</li>
+            </ol>
+            
+            <h3>4. 实际翻译测试</h3>
+            <button onclick="openTestVideo()">打开测试视频</button>
+            <p>在YouTube上测试翻译，体验最新模型的性能</p>
+        </div>
+
+        <div class="info-section">
+            <h2>🔍 预期的控制台日志</h2>
+            
+            <h3>动态模型检测：</h3>
+            <div class="code">🔍 Available Gemini models: [
+  "gemini-2.0-flash-exp",
+  "gemini-2.0-flash-thinking-exp", 
+  "gemini-1.5-pro-002",
+  "gemini-1.5-flash-002"
+]
+🎯 Using dynamically detected models
+🔄 Trying Gemini model: gemini-2.0-flash-exp
+✅ Successfully using model: gemini-2.0-flash-exp</div>
+            
+            <h3>回退机制：</h3>
+            <div class="code">⚠️ Could not fetch available models, using fallback list
+📋 Using fallback model list
+🔄 Trying Gemini model: gemini-2.0-flash-exp
+✅ Successfully using model: gemini-2.0-flash-exp</div>
+            
+            <h3>未来Gemini 2.5检测：</h3>
+            <div class="code">🔍 Available Gemini models: [
+  "gemini-2.5-pro-exp",        // 🎉 未来新模型
+  "gemini-2.0-flash-exp",
+  "gemini-1.5-pro-002"
+]
+🚀 New model detected: gemini-2.5-pro-exp
+✅ Successfully using model: gemini-2.5-pro-exp</div>
+        </div>
+
+        <div class="feature-section">
+            <h2>🎉 智能模型系统的优势</h2>
+            
+            <div class="highlight">
+                <strong>🔮 面向未来：</strong>
+                <ul>
+                    <li><strong>自动适应</strong>：无需等待插件更新即可使用新模型</li>
+                    <li><strong>性能优先</strong>：始终使用最佳可用模型</li>
+                    <li><strong>稳定可靠</strong>：多重回退确保服务不中断</li>
+                    <li><strong>智能优化</strong>：根据实际可用性动态调整</li>
+                </ul>
+            </div>
+            
+            <p>当Google发布Gemini 2.5 Pro时，您的插件将自动检测并开始使用，无需任何手动操作！</p>
+        </div>
+    </div>
+
+    <script>
+        function openExtensions() {
+            window.open('chrome://extensions/', '_blank');
+        }
+        
+        function openGeminiAPI() {
+            window.open('https://aistudio.google.com/app/apikey', '_blank');
+        }
+        
+        function openTestVideo() {
+            window.open('https://www.youtube.com/watch?v=jNQXAC9IVRw', '_blank');
+        }
+    </script>
+</body>
+</html>

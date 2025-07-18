@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI优化和实时翻译引擎测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        .improvement-section {
+            background: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #28a745;
+        }
+        .demo-section {
+            background: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        .before-after {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .before, .after {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .before {
+            background: #ffebee;
+            border: 2px solid #f44336;
+        }
+        .after {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+        }
+        .subtitle-demo {
+            position: relative;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #1a1a1a, #333);
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .old-subtitle {
+            background: rgba(255, 0, 0, 0.9) !important;
+            color: white !important;
+            padding: 12px 20px !important;
+            border-radius: 6px !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            border: 2px solid yellow !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5) !important;
+        }
+        .new-subtitle {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%) !important;
+            color: #ffffff !important;
+            padding: 4px 8px !important;
+            border-radius: 3px !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+            backdrop-filter: blur(2px) !important;
+            line-height: 1.2 !important;
+        }
+        .feature-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .feature-list h4 {
+            color: #495057;
+            margin-top: 0;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #005a8b;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 UI优化 & ⚡ 实时翻译引擎改进</h1>
+    
+    <div class="improvement-section">
+        <h2>✨ UI优化改进</h2>
+        
+        <h3>🎯 问题1：红色测试消息 → 优雅渐变</h3>
+        <div class="before-after">
+            <div class="before">
+                <h4>❌ 修改前</h4>
+                <div class="subtitle-demo">
+                    <div class="old-subtitle">🤖 AI翻译已准备就绪 - 测试消息</div>
+                </div>
+                <p>红色背景 + 黄色边框，视觉冲击过强</p>
+            </div>
+            <div class="after">
+                <h4>✅ 修改后</h4>
+                <div class="subtitle-demo">
+                    <div class="new-subtitle">🤖 AI翻译已准备就绪</div>
+                </div>
+                <p>优雅的黑色渐变，专业美观</p>
+            </div>
+        </div>
+        
+        <h3>🎯 问题2：字幕框过大 → 精致紧凑</h3>
+        <div class="feature-list">
+            <h4>优化细节：</h4>
+            <ul>
+                <li><strong>内边距</strong>：12px 20px → 4px 8px（减少50%）</li>
+                <li><strong>外边距</strong>：4px → 1px（更紧凑）</li>
+                <li><strong>圆角</strong>：6px → 3px（更精致）</li>
+                <li><strong>边框</strong>：2px粗边框 → 1px细边框</li>
+                <li><strong>字重</strong>：bold → 500（更自然）</li>
+                <li><strong>行高</strong>：默认 → 1.2（更紧凑）</li>
+                <li><strong>背景模糊</strong>：添加backdrop-filter增强质感</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="improvement-section">
+        <h2>⚡ 实时翻译引擎优化</h2>
+        
+        <div class="feature-list">
+            <h4>🕐 时间同步功能：</h4>
+            <ul>
+                <li><strong>视频时间追踪</strong>：实时跟踪视频播放进度</li>
+                <li><strong>字幕时效管理</strong>：5秒后自动清除过期字幕</li>
+                <li><strong>播放状态响应</strong>：暂停时停止翻译，播放时恢复</li>
+                <li><strong>跳转处理</strong>：视频跳转时清除旧字幕</li>
+            </ul>
+        </div>
+        
+        <div class="feature-list">
+            <h4>📚 字幕历史管理：</h4>
+            <ul>
+                <li><strong>历史记录</strong>：保存最近50条字幕翻译</li>
+                <li><strong>时间戳记录</strong>：记录每条字幕的视频时间点</li>
+                <li><strong>上下文支持</strong>：为未来的上下文翻译做准备</li>
+                <li><strong>智能清理</strong>：自动管理历史记录大小</li>
+            </ul>
+        </div>
+        
+        <div class="feature-list">
+            <h4>🔄 翻译状态管理：</h4>
+            <ul>
+                <li><strong>状态追踪</strong>：准确跟踪翻译进行状态</li>
+                <li><strong>防重复处理</strong>：避免同时进行多个翻译</li>
+                <li><strong>错误恢复</strong>：翻译失败后正确重置状态</li>
+                <li><strong>性能监控</strong>：记录翻译开始时间用于性能分析</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🧪 测试步骤</h2>
+        
+        <h3>1. 重新加载插件</h3>
+        <button onclick="openExtensions()">打开扩展程序页面</button>
+        <p>刷新插件以应用UI和功能改进</p>
+        
+        <h3>2. 测试UI改进</h3>
+        <ol>
+            <li>访问YouTube视频页面</li>
+            <li>启用翻译功能</li>
+            <li>观察测试消息的新样式（黑色渐变背景）</li>
+            <li>观察翻译字幕的精致外观（更小的边距和圆角）</li>
+        </ol>
+        
+        <h3>3. 测试实时引擎</h3>
+        <button onclick="openTestVideo()">打开测试视频</button>
+        <ol>
+            <li>播放视频并观察字幕翻译</li>
+            <li>暂停视频，确认翻译停止</li>
+            <li>恢复播放，确认翻译继续</li>
+            <li>跳转到不同时间点，观察字幕清除</li>
+            <li>观察长时间无新字幕时的自动清理</li>
+        </ol>
+        
+        <h3>4. 查看控制台日志</h3>
+        <div class="code">预期的新日志：
+▶️ Video started playing
+⏸️ Video paused  
+⏭️ Video seeked to: 123.45
+⏰ Clearing old subtitle due to timing
+📚 Added to subtitle history: {original: "Hello", translation: "你好", timestamp: 123.45}</div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎯 验证要点</h2>
+        
+        <h3>✅ UI优化验证：</h3>
+        <ul>
+            <li>测试消息使用黑色渐变背景，不再是红色</li>
+            <li>翻译字幕更加精致紧凑</li>
+            <li>字幕边框更细，圆角更小</li>
+            <li>整体视觉效果更专业</li>
+        </ul>
+        
+        <h3>✅ 实时引擎验证：</h3>
+        <ul>
+            <li>视频暂停时翻译处理暂停</li>
+            <li>视频恢复时翻译处理恢复</li>
+            <li>视频跳转时旧字幕立即清除</li>
+            <li>长时间无新字幕时自动清理</li>
+            <li>控制台显示详细的状态日志</li>
+        </ul>
+    </div>
+
+    <script>
+        function openExtensions() {
+            window.open('chrome://extensions/', '_blank');
+        }
+        
+        function openTestVideo() {
+            // Open a video with good captions for testing
+            window.open('https://www.youtube.com/watch?v=jNQXAC9IVRw', '_blank');
+        }
+    </script>
+</body>
+</html>

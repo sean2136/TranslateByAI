@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕问题修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .fix-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .test-section {
+            background: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .position-demo {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .demo-subtitle {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .demo-subtitle.bottom { bottom: 20px; }
+        .demo-subtitle.top { top: 20px; }
+        .demo-subtitle.center {
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 字幕问题修复测试</h1>
+
+    <div class="fix-section">
+        <h2>✅ 修复内容总览</h2>
+
+        <h3>🔄 问题1：视频切换时字幕残留</h3>
+        <ul>
+            <li><strong>增强的视频切换检测</strong>：监听video元素的loadstart和loadeddata事件</li>
+            <li><strong>URL变化监听</strong>：检测YouTube的单页应用导航</li>
+            <li><strong>浏览器导航监听</strong>：处理前进/后退按钮</li>
+            <li><strong>彻底清理机制</strong>：清除所有残留的字幕元素</li>
+        </ul>
+
+        <h3>📍 问题2：可调整的字幕位置</h3>
+        <ul>
+            <li><strong>位置选项</strong>：顶部、中央、底部三种位置</li>
+            <li><strong>底部偏移调节</strong>：60-200px可调，避免遮挡进度条</li>
+            <li><strong>实时预览</strong>：设置更改后立即应用</li>
+            <li><strong>智能定位</strong>：根据位置自动调整transform属性</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 测试步骤</h2>
+
+        <h3>1. 重新加载插件</h3>
+        <ol>
+            <li>访问 <code>chrome://extensions/</code></li>
+            <li>找到 "AI Video Translator" 插件</li>
+            <li>点击刷新按钮 🔄</li>
+        </ol>
+
+        <h3>2. 测试字幕残留修复</h3>
+        <button onclick="openVideoSwitchTest()">打开视频切换测试</button>
+        <ol>
+            <li>打开一个有字幕的YouTube视频</li>
+            <li>启用翻译功能，确认字幕正常显示</li>
+            <li>切换到另一个没有字幕的视频</li>
+            <li>确认旧字幕已完全消失</li>
+            <li>再切换回有字幕的视频</li>
+            <li>确认新字幕正常显示</li>
+        </ol>
+
+        <h3>3. 测试字幕位置调整</h3>
+        <p>在插件设置面板中测试以下功能：</p>
+
+        <h4>位置预览：</h4>
+        <div class="position-demo">
+            <div class="demo-subtitle top" id="demo-top">顶部字幕位置</div>
+            <div class="demo-subtitle center" id="demo-center">中央字幕位置</div>
+            <div class="demo-subtitle bottom" id="demo-bottom">底部字幕位置</div>
+        </div>
+
+        <button onclick="showPosition('top')">显示顶部</button>
+        <button onclick="showPosition('center')">显示中央</button>
+        <button onclick="showPosition('bottom')">显示底部</button>
+        <button onclick="hideAll()">隐藏全部</button>
+
+        <ol>
+            <li>打开插件设置面板</li>
+            <li>尝试切换"字幕位置"选项</li>
+            <li>调整"底部偏移"滑块</li>
+            <li>点击"保存设置"</li>
+            <li>在YouTube视频中观察字幕位置变化</li>
+        </ol>
+    </div>
+
+    <div class="test-section warning">
+        <h2>🔍 预期的控制台日志</h2>
+        <p>在YouTube页面的开发者工具中，您应该看到以下新的日志：</p>
+
+        <h3>视频切换时：</h3>
+        <div class="code">🔄 Video loading started - clearing subtitles
+🧹 Clearing subtitles...
+✅ Subtitle container cleared
+📹 Video data loaded - reinitializing subtitle extraction
+🌐 URL changed - clearing subtitles</div>
+
+        <h3>位置设置时：</h3>
+        <div class="code">⚙️ Updating settings: {subtitleStyle: {position: "top", bottomOffset: 120}}
+🎯 Applying subtitle position: top, offset: 120px</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 验证要点</h2>
+
+        <h3>✅ 字幕残留修复验证：</h3>
+        <ul>
+            <li>从有字幕视频切换到无字幕视频时，字幕立即消失</li>
+            <li>YouTube导航（点击推荐视频）时字幕正确清理</li>
+            <li>浏览器前进/后退时字幕状态正确</li>
+            <li>控制台显示清理日志</li>
+        </ul>
+
+        <h3>✅ 字幕位置调整验证：</h3>
+        <ul>
+            <li>设置面板中有"字幕位置"和"底部偏移"选项</li>
+            <li>位置切换后字幕立即移动到新位置</li>
+            <li>底部偏移调整后字幕距离底部的距离改变</li>
+            <li>字幕不会遮挡YouTube的进度条和控制按钮</li>
+        </ul>
+    </div>
+
+    <script>
+        function openVideoSwitchTest() {
+            // Open videos for testing subtitle clearing
+            const testUrls = [
+                'https://www.youtube.com/watch?v=jNQXAC9IVRw', // TED talk with captions
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Classic video
+                'https://www.youtube.com/watch?v=9bZkp7q19f0'  // Another test video
+            ];
+
+            testUrls.forEach((url, index) => {
+                setTimeout(() => {
+                    window.open(url, `_blank_${index}`);
+                }, index * 1000);
+            });
+        }
+
+        function showPosition(position) {
+            hideAll();
+            const element = document.getElementById(`demo-${position}`);
+            if (element) {
+                element.style.display = 'block';
+            }
+        }
+
+        function hideAll() {
+            ['top', 'center', 'bottom'].forEach(pos => {
+                const element = document.getElementById(`demo-${pos}`);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize with bottom position shown
+        window.onload = () => {
+            showPosition('bottom');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+/* Content script styles for AI Video Translator */
+
+#ai-translator-subtitles {
+  position: absolute !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  word-wrap: break-word !important;
+  white-space: pre-wrap !important;
+  max-width: 80% !important;
+  transition: opacity 0.3s ease !important;
+}
+
+#ai-translator-subtitles .subtitle-line {
+  display: inline-block !important;
+  margin: 2px 4px !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+  backdrop-filter: blur(2px) !important;
+  animation: fadeIn 0.3s ease !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure subtitles don't interfere with video controls */
+.html5-video-player:hover #ai-translator-subtitles {
+  opacity: 0.8 !important;
+}
+
+/* Hide when video is paused and controls are visible */
+.html5-video-player.paused-mode #ai-translator-subtitles {
+  bottom: 80px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #ai-translator-subtitles {
+    font-size: 14px !important;
+    max-width: 90% !important;
+    bottom: 50px !important;
+  }
+  
+  #ai-translator-subtitles .subtitle-line {
+    padding: 4px 8px !important;
+    margin: 1px 2px !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  #ai-translator-subtitles .subtitle-line {
+    border: 1px solid #ffffff !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  #ai-translator-subtitles .subtitle-line {
+    animation: none !important;
+  }
+  
+  #ai-translator-subtitles {
+    transition: none !important;
+  }
+}

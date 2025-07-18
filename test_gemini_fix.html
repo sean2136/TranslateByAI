@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini API修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .fix-section {
+            background: #e8f5e8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .problem-section {
+            background: #f8d7da;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+        .test-section {
+            background: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .model-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #005a8b;
+        }
+        .error-highlight {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #ffc107;
+            margin: 10px 0;
+        }
+        .success-highlight {
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #28a745;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Gemini API修复</h1>
+    
+    <div class="problem-section">
+        <h2>❌ 发现的问题</h2>
+        <div class="error-highlight">
+            <strong>错误信息：</strong><br>
+            <code>models/gemini-pro is not found for API version v1beta, or is not supported for generateContent</code>
+        </div>
+        
+        <h3>问题原因：</h3>
+        <ul>
+            <li><strong>模型名称过时</strong>：<code>gemini-pro</code>可能已被弃用或重命名</li>
+            <li><strong>API版本问题</strong>：v1beta版本可能不支持某些旧模型</li>
+            <li><strong>地区限制</strong>：某些地区可能无法访问特定模型</li>
+        </ul>
+    </div>
+
+    <div class="fix-section">
+        <h2>✅ 修复方案</h2>
+        
+        <h3>🔄 多模型回退机制</h3>
+        <p>现在插件会按优先级尝试多个Gemini模型：</p>
+        
+        <div class="model-list">
+            <h4>模型尝试顺序：</h4>
+            <ol>
+                <li><code>gemini-1.5-flash-latest</code> - 最新的Flash模型</li>
+                <li><code>gemini-1.5-flash</code> - 稳定的Flash模型</li>
+                <li><code>gemini-pro</code> - 传统Pro模型（备用）</li>
+            </ol>
+        </div>
+        
+        <h3>🛠️ 技术实现</h3>
+        <div class="code">// 按优先级尝试不同模型
+const models = [
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash', 
+  'gemini-pro'
+];
+
+for (const model of models) {
+  try {
+    response = await fetch(`.../${model}:generateContent?key=${apiKey}`);
+    if (response.ok) {
+      console.log(`✅ Successfully using model: ${model}`);
+      break;
+    }
+  } catch (error) {
+    console.log(`❌ Model ${model} failed, trying next...`);
+  }
+}</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 测试步骤</h2>
+        
+        <h3>1. 重新加载插件</h3>
+        <button onclick="openExtensions()">打开扩展程序页面</button>
+        <p>刷新插件以应用Gemini API修复</p>
+        
+        <h3>2. 获取Gemini API Key</h3>
+        <button onclick="openGeminiAPI()">获取Gemini API Key</button>
+        <ol>
+            <li>访问Google AI Studio</li>
+            <li>创建新的API Key</li>
+            <li>确保API Key有访问Gemini模型的权限</li>
+        </ol>
+        
+        <h3>3. 配置和测试</h3>
+        <ol>
+            <li>在插件设置中选择"Google Gemini"</li>
+            <li>输入您的Gemini API Key</li>
+            <li>点击"测试翻译"按钮</li>
+            <li>观察控制台日志，应该看到模型尝试过程</li>
+        </ol>
+        
+        <h3>4. 实际翻译测试</h3>
+        <button onclick="openTestVideo()">打开测试视频</button>
+        <ol>
+            <li>在YouTube视频上启用翻译</li>
+            <li>观察翻译是否正常工作</li>
+            <li>检查控制台是否有错误</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 预期的控制台日志</h2>
+        
+        <h3>成功情况：</h3>
+        <div class="success-highlight">
+            <div class="code">🔄 Starting Gemini translation: {text: "Hello", sourceLang: "en", targetLang: "zh-CN"}
+📤 Sending request to Gemini API
+🔄 Trying Gemini model: gemini-1.5-flash-latest
+✅ Successfully using model: gemini-1.5-flash-latest
+📥 Gemini API response received
+✅ Translation completed: 你好</div>
+        </div>
+        
+        <h3>回退情况：</h3>
+        <div class="code">🔄 Trying Gemini model: gemini-1.5-flash-latest
+❌ Model gemini-1.5-flash-latest failed: 404
+🔄 Trying Gemini model: gemini-1.5-flash
+✅ Successfully using model: gemini-1.5-flash
+📥 Gemini API response received
+✅ Translation completed: 你好</div>
+        
+        <h3>API Key验证：</h3>
+        <div class="code">🔑 Validating API Key for gemini
+📡 API response status: 200
+✅ API Key validation successful</div>
+    </div>
+
+    <div class="fix-section">
+        <h2>🎯 验证要点</h2>
+        
+        <h3>✅ 修复验证：</h3>
+        <ul>
+            <li>API Key验证不再报错"models/gemini-pro is not found"</li>
+            <li>翻译功能正常工作</li>
+            <li>控制台显示成功使用的模型名称</li>
+            <li>如果一个模型失败，会自动尝试下一个</li>
+        </ul>
+        
+        <h3>🚨 如果仍有问题：</h3>
+        <ul>
+            <li>检查API Key是否有效且有足够配额</li>
+            <li>确认您的地区支持Gemini API</li>
+            <li>尝试在Google AI Studio中直接测试API Key</li>
+            <li>查看控制台的详细错误信息</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🌐 手动测试Gemini API</h2>
+        <p>您也可以手动测试不同的Gemini模型：</p>
+        
+        <h4>测试最新模型：</h4>
+        <div class="code">curl -X POST \
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [{"parts": [{"text": "Hello"}]}],
+    "generationConfig": {"maxOutputTokens": 10}
+  }'</div>
+        
+        <h4>测试稳定模型：</h4>
+        <div class="code">curl -X POST \
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [{"parts": [{"text": "Hello"}]}],
+    "generationConfig": {"maxOutputTokens": 10}
+  }'</div>
+    </div>
+
+    <script>
+        function openExtensions() {
+            window.open('chrome://extensions/', '_blank');
+        }
+        
+        function openGeminiAPI() {
+            window.open('https://aistudio.google.com/app/apikey', '_blank');
+        }
+        
+        function openTestVideo() {
+            window.open('https://www.youtube.com/watch?v=jNQXAC9IVRw', '_blank');
+        }
+    </script>
+</body>
+</html>

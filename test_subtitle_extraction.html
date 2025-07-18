@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕提取功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007cba;
+        }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .info { border-left-color: #17a2b8; background: #d1ecf1; }
+        .code {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #005a8b;
+        }
+        .improvement-list {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .improvement-list h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+        .improvement-list ul {
+            margin: 10px 0;
+        }
+        .improvement-list li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 字幕提取功能改进测试</h1>
+    
+    <div class="test-section success">
+        <h2>✅ 字幕提取功能改进内容</h2>
+        
+        <div class="improvement-list">
+            <h4>🎯 新增功能：</h4>
+            <ul>
+                <li><strong>多选择器支持</strong>：支持多种YouTube字幕元素选择器</li>
+                <li><strong>多策略提取</strong>：同时监控多种字幕源</li>
+                <li><strong>文本轨道支持</strong>：直接从video元素的textTracks提取</li>
+                <li><strong>智能字幕清理</strong>：自动清理音乐符号、括号内容等</li>
+                <li><strong>重复内容过滤</strong>：避免重复翻译相同内容</li>
+                <li><strong>增强的字幕按钮检测</strong>：支持多种字幕按钮选择器</li>
+                <li><strong>键盘快捷键支持</strong>：尝试使用C键启用字幕</li>
+            </ul>
+        </div>
+        
+        <div class="improvement-list">
+            <h4>🔍 支持的字幕选择器：</h4>
+            <ul>
+                <li><code>.caption-window .ytp-caption-segment</code></li>
+                <li><code>.ytp-caption-window-container .ytp-caption-segment</code></li>
+                <li><code>.html5-captions-display .captions-text</code></li>
+                <li><code>.ytp-caption-window-container span</code></li>
+                <li><code>[class*="caption"] span</code></li>
+                <li><code>.captions-text</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section info">
+        <h2>🧪 测试步骤</h2>
+        
+        <h3>1. 重新加载插件</h3>
+        <ol>
+            <li>访问 <code>chrome://extensions/</code></li>
+            <li>找到 "AI Video Translator" 插件</li>
+            <li>点击刷新按钮 🔄</li>
+        </ol>
+        
+        <h3>2. 测试不同类型的YouTube视频</h3>
+        <button onclick="openTestVideos()">打开测试视频</button>
+        <ul>
+            <li><strong>自动生成字幕</strong>：英文视频，YouTube自动生成字幕</li>
+            <li><strong>手动上传字幕</strong>：有创作者上传的字幕文件</li>
+            <li><strong>多语言字幕</strong>：支持多种语言的视频</li>
+            <li><strong>实时直播</strong>：带有实时字幕的直播</li>
+        </ul>
+        
+        <h3>3. 观察控制台日志</h3>
+        <p>在YouTube页面按F12打开开发者工具，查看控制台中的详细日志：</p>
+        <div class="code">预期的新日志格式：
+🔍 Starting YouTube subtitle extraction...
+👀 Setting up subtitle observers...
+📺 Found caption element with selector: .caption-window
+🔘 Attempting to enable YouTube captions...
+🎯 Found caption button with selector: .ytp-subtitles-button
+✅ Captions already enabled
+🔍 Processing YouTube captions...
+📝 Found 2 caption elements with selector: .caption-window .ytp-caption-segment
+📄 Current caption text: Hello, welcome to this video
+🧹 Cleaned caption text: Hello, welcome to this video
+🔄 Attempting to translate: Hello, welcome to this video</div>
+    </div>
+
+    <div class="test-section warning">
+        <h2>🔍 调试命令</h2>
+        <p>如果字幕提取仍有问题，可以在YouTube页面控制台中运行以下调试命令：</p>
+        
+        <h3>检查字幕元素：</h3>
+        <div class="code">// 检查所有可能的字幕元素
+const selectors = [
+    '.caption-window .ytp-caption-segment',
+    '.ytp-caption-window-container .ytp-caption-segment',
+    '.html5-captions-display .captions-text',
+    '.ytp-caption-window-container span',
+    '[class*="caption"] span',
+    '.captions-text'
+];
+
+selectors.forEach(selector => {
+    const elements = document.querySelectorAll(selector);
+    console.log(`${selector}: ${elements.length} elements found`);
+    elements.forEach((el, i) => {
+        console.log(`  ${i}: "${el.textContent.trim()}"`);
+    });
+});
+</div>
+        
+        <h3>检查视频文本轨道：</h3>
+        <div class="code">// 检查video元素的文本轨道
+const video = document.querySelector('video');
+if (video && video.textTracks) {
+    console.log(`Found ${video.textTracks.length} text tracks:`);
+    for (let i = 0; i < video.textTracks.length; i++) {
+        const track = video.textTracks[i];
+        console.log(`Track ${i}:`, {
+            kind: track.kind,
+            language: track.language,
+            label: track.label,
+            mode: track.mode,
+            cues: track.cues ? track.cues.length : 'N/A'
+        });
+    }
+}
+</div>
+        
+        <h3>手动触发字幕处理：</h3>
+        <div class="code">// 手动触发字幕处理（如果插件已加载）
+if (window.videoTranslator) {
+    window.videoTranslator.extractYouTubeSubtitles();
+}
+</div>
+    </div>
+
+    <div class="test-section error">
+        <h2>🚨 常见问题解决</h2>
+        
+        <h3>字幕按钮找不到</h3>
+        <ul>
+            <li>确保视频确实有字幕（查看YouTube播放器底部是否有CC按钮）</li>
+            <li>尝试手动点击字幕按钮</li>
+            <li>检查视频是否为私人或受限制内容</li>
+        </ul>
+        
+        <h3>字幕元素检测失败</h3>
+        <ul>
+            <li>YouTube可能更新了字幕元素的CSS类名</li>
+            <li>使用调试命令检查当前页面的字幕元素结构</li>
+            <li>尝试刷新页面或切换到其他视频</li>
+        </ul>
+        
+        <h3>翻译不显示</h3>
+        <ul>
+            <li>检查是否正确配置了API Key</li>
+            <li>查看控制台是否有翻译错误</li>
+            <li>确认字幕容器是否正确创建</li>
+        </ul>
+    </div>
+
+    <script>
+        function openTestVideos() {
+            // Open different types of test videos
+            const testVideos = [
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Classic test video
+                'https://www.youtube.com/watch?v=jNQXAC9IVRw', // TED talk with good captions
+                'https://www.youtube.com/watch?v=9bZkp7q19f0' // Another test video
+            ];
+            
+            testVideos.forEach((url, index) => {
+                setTimeout(() => {
+                    window.open(url, `_blank_${index}`);
+                }, index * 1000); // Stagger the opening
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI翻译功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .feature-section {
+            background: #e8f5e8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .test-section {
+            background: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .api-setup {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .step-list {
+            counter-reset: step-counter;
+        }
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #007cba;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 AI翻译功能测试</h1>
+    
+    <div class="feature-section">
+        <h2>✨ AI翻译功能特性</h2>
+        
+        <h3>🔧 技术改进：</h3>
+        <ul>
+            <li><strong>DeepSeek API集成</strong>：使用专业的大语言模型进行翻译</li>
+            <li><strong>智能重试机制</strong>：网络错误时自动重试，最多3次</li>
+            <li><strong>错误处理优化</strong>：用户友好的错误提示</li>
+            <li><strong>API Key验证</strong>：实时验证API Key有效性</li>
+            <li><strong>防抖优化</strong>：避免频繁API调用，500ms防抖延迟</li>
+            <li><strong>翻译缓存</strong>：相同内容不重复翻译</li>
+        </ul>
+        
+        <h3>🎯 翻译质量优化：</h3>
+        <ul>
+            <li><strong>专业提示词</strong>：针对视频字幕优化的翻译提示</li>
+            <li><strong>语气保持</strong>：保持原文的语气和情感</li>
+            <li><strong>术语准确性</strong>：专业术语和人名的准确翻译</li>
+            <li><strong>简洁表达</strong>：适合字幕显示的简洁翻译</li>
+        </ul>
+    </div>
+
+    <div class="api-setup">
+        <h3>🔑 API Key 设置</h3>
+        <p><strong>重要：</strong>使用AI翻译功能需要DeepSeek API Key</p>
+        <ol class="step-list">
+            <li>访问 <a href="https://platform.deepseek.com" target="_blank">DeepSeek平台</a></li>
+            <li>注册账号并登录</li>
+            <li>在控制台中创建API Key</li>
+            <li>复制API Key到插件设置中</li>
+            <li>点击"测试翻译"验证配置</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 测试步骤</h2>
+        
+        <h3>1. 重新加载插件</h3>
+        <button onclick="openExtensionsPage()">打开扩展程序页面</button>
+        <p>在扩展程序页面中刷新插件以应用最新更改</p>
+        
+        <h3>2. 配置API Key</h3>
+        <ol class="step-list">
+            <li>点击插件图标打开设置面板</li>
+            <li>在"DeepSeek API Key"字段输入您的API Key</li>
+            <li>点击"测试翻译"按钮验证配置</li>
+            <li>看到"翻译测试成功"消息后点击"保存设置"</li>
+        </ol>
+        
+        <h3>3. 测试实际翻译</h3>
+        <button onclick="openTestVideos()">打开测试视频</button>
+        <ol class="step-list">
+            <li>访问有英文字幕的YouTube视频</li>
+            <li>开启插件翻译功能</li>
+            <li>观察字幕是否正确翻译为中文</li>
+            <li>测试不同类型的内容（对话、技术术语、专有名词等）</li>
+        </ol>
+    </div>
+
+    <div class="test-section warning">
+        <h2>🔍 预期的控制台日志</h2>
+        <p>在YouTube页面的开发者工具中，您应该看到以下翻译相关日志：</p>
+        
+        <h3>成功翻译时：</h3>
+        <div class="code">🔄 Translating text: Hello, welcome to this video
+📤 Sending request to DeepSeek API
+📥 DeepSeek API response received
+✅ Translation completed: 你好，欢迎观看这个视频
+🎬 Displaying translation: 你好，欢迎观看这个视频
+✅ Translation displayed in container</div>
+        
+        <h3>API Key验证时：</h3>
+        <div class="code">🔑 Validating API Key...
+✅ API Key validation successful</div>
+        
+        <h3>错误处理时：</h3>
+        <div class="code">❌ Translation failed: API密钥无效或已过期
+⚠️ 请配置API Key</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 验证要点</h2>
+        
+        <h3>✅ API Key功能验证：</h3>
+        <ul>
+            <li>输入API Key后自动验证（失焦时触发）</li>
+            <li>验证成功时输入框边框变绿</li>
+            <li>验证失败时输入框边框变红并显示错误信息</li>
+            <li>"测试翻译"按钮能正常工作</li>
+        </ul>
+        
+        <h3>✅ 翻译质量验证：</h3>
+        <ul>
+            <li>翻译结果语义准确，符合中文表达习惯</li>
+            <li>保持原文的语气和情感</li>
+            <li>专业术语翻译准确</li>
+            <li>翻译简洁，适合字幕显示</li>
+        </ul>
+        
+        <h3>✅ 性能优化验证：</h3>
+        <ul>
+            <li>相同字幕内容不重复翻译（使用缓存）</li>
+            <li>快速变化的字幕有防抖处理</li>
+            <li>网络错误时有重试机制</li>
+            <li>错误信息用户友好且会自动消失</li>
+        </ul>
+    </div>
+
+    <div class="test-section error">
+        <h2>🚨 常见问题解决</h2>
+        
+        <h3>API Key相关问题</h3>
+        <ul>
+            <li><strong>验证失败</strong>：检查API Key是否正确复制，是否有多余空格</li>
+            <li><strong>401错误</strong>：API Key可能已过期或无效，需要重新生成</li>
+            <li><strong>403错误</strong>：账户可能没有权限或余额不足</li>
+        </ul>
+        
+        <h3>翻译质量问题</h3>
+        <ul>
+            <li><strong>翻译不准确</strong>：可能是源语言检测错误，尝试手动设置源语言</li>
+            <li><strong>翻译太慢</strong>：网络问题或API服务繁忙，稍后重试</li>
+            <li><strong>部分内容未翻译</strong>：可能是字幕提取问题，检查原始字幕是否正常</li>
+        </ul>
+        
+        <h3>技术问题</h3>
+        <ul>
+            <li><strong>插件无响应</strong>：重新加载插件并刷新页面</li>
+            <li><strong>控制台错误</strong>：检查网络连接和API Key配置</li>
+            <li><strong>字幕不显示</strong>：确认YouTube视频有字幕且插件已启用</li>
+        </ul>
+    </div>
+
+    <script>
+        function openExtensionsPage() {
+            window.open('chrome://extensions/', '_blank');
+        }
+        
+        function openTestVideos() {
+            // Open videos with good English captions for testing
+            const testVideos = [
+                'https://www.youtube.com/watch?v=jNQXAC9IVRw', // TED talk
+                'https://www.youtube.com/watch?v=8S0FDjFBj8o', // Tech explanation
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ'  // Classic test video
+            ];
+            
+            testVideos.forEach((url, index) => {
+                setTimeout(() => {
+                    window.open(url, `_blank_${index}`);
+                }, index * 1000);
+            });
+        }
+    </script>
+</body>
+</html>

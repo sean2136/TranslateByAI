@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕框样式预览 - AI Video Translator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle-container {
+            position: absolute;
+            left: 50%;
+            bottom: 60px;
+            transform: translateX(-50%);
+            z-index: 99999;
+            pointer-events: none;
+            text-align: center;
+            max-width: 80%;
+            width: auto;
+            height: auto;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            line-height: 1.4;
+            visibility: visible;
+            opacity: 1;
+            display: block;
+        }
+
+        .subtitle-box {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%);
+            color: #ffffff;
+            padding: 1px 4px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 1px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+            max-width: 85%;
+            word-wrap: break-word;
+            line-height: 1.2;
+            backdrop-filter: blur(2px);
+            transition: all 0.2s ease;
+        }
+
+        .controls {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: inline-block;
+            width: 120px;
+            color: #ccc;
+        }
+
+        select, input[type="range"] {
+            background: #3a3a3a;
+            color: white;
+            border: 1px solid #555;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .demo-texts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .demo-text-item {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .demo-text-item:hover {
+            background: #3a3a3a;
+        }
+
+        .demo-text-item h4 {
+            margin: 0 0 10px 0;
+            color: #4CAF50;
+        }
+
+        .demo-text-item p {
+            margin: 0;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .current-settings {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .current-settings h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+
+        .setting-value {
+            color: #ffd700;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 字幕框样式预览</h1>
+        
+        <div class="video-container">
+            <div>模拟视频播放区域</div>
+            <div class="subtitle-container">
+                <div class="subtitle-box" id="subtitleBox">
+                    这是一个示例字幕，展示当前的样式效果
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3>🎛️ 实时调整参数</h3>
+            
+            <div class="control-group">
+                <label>内边距:</label>
+                <select id="paddingControl">
+                    <option value="1px 2px">极小 (1px 2px)</option>
+                    <option value="1px 4px" selected>当前 (1px 4px)</option>
+                    <option value="2px 6px">小 (2px 6px)</option>
+                    <option value="3px 8px">中 (3px 8px)</option>
+                    <option value="4px 10px">大 (4px 10px)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>最大宽度:</label>
+                <input type="range" id="maxWidthControl" min="50" max="95" value="85">
+                <span id="maxWidthValue">85%</span>
+            </div>
+
+            <div class="control-group">
+                <label>字体大小:</label>
+                <select id="fontSizeControl">
+                    <option value="12px">小 (12px)</option>
+                    <option value="14px" selected>当前 (14px)</option>
+                    <option value="16px">中 (16px)</option>
+                    <option value="18px">大 (18px)</option>
+                    <option value="20px">特大 (20px)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>圆角大小:</label>
+                <select id="borderRadiusControl">
+                    <option value="2px">小 (2px)</option>
+                    <option value="4px" selected>当前 (4px)</option>
+                    <option value="6px">中 (6px)</option>
+                    <option value="8px">大 (8px)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>底部偏移:</label>
+                <input type="range" id="bottomOffsetControl" min="20" max="200" value="60">
+                <span id="bottomOffsetValue">60px</span>
+            </div>
+        </div>
+
+        <div class="demo-texts">
+            <div class="demo-text-item" onclick="changeText('短文本')">
+                <h4>短文本测试</h4>
+                <p>测试简短字幕的显示效果</p>
+            </div>
+            
+            <div class="demo-text-item" onclick="changeText('这是一段中等长度的字幕文本，用来测试换行效果')">
+                <h4>中等长度测试</h4>
+                <p>测试中等长度字幕的换行情况</p>
+            </div>
+            
+            <div class="demo-text-item" onclick="changeText('这是一段很长很长的字幕文本，专门用来测试在不同宽度设置下的自动换行效果，看看是否会出现频繁换行的问题')">
+                <h4>长文本测试</h4>
+                <p>测试长字幕的换行和显示效果</p>
+            </div>
+            
+            <div class="demo-text-item" onclick="changeText('Hello, this is an English subtitle to test how English text displays in the subtitle box')">
+                <h4>英文测试</h4>
+                <p>测试英文字幕的显示效果</p>
+            </div>
+            
+            <div class="demo-text-item" onclick="changeText('こんにちは、これは日本語の字幕テストです')">
+                <h4>日文测试</h4>
+                <p>测试日文字幕的显示效果</p>
+            </div>
+            
+            <div class="demo-text-item" onclick="changeText('🎵 [音乐] 这是带有特殊符号的字幕 ♪♫')">
+                <h4>特殊符号测试</h4>
+                <p>测试包含音乐符号等特殊字符的字幕</p>
+            </div>
+        </div>
+
+        <div class="current-settings">
+            <h3>📊 当前设置</h3>
+            <p>内边距: <span class="setting-value" id="currentPadding">1px 4px</span></p>
+            <p>最大宽度: <span class="setting-value" id="currentMaxWidth">85%</span></p>
+            <p>字体大小: <span class="setting-value" id="currentFontSize">14px</span></p>
+            <p>圆角大小: <span class="setting-value" id="currentBorderRadius">4px</span></p>
+            <p>底部偏移: <span class="setting-value" id="currentBottomOffset">60px</span></p>
+        </div>
+    </div>
+
+    <script>
+        const subtitleBox = document.getElementById('subtitleBox');
+        const subtitleContainer = document.querySelector('.subtitle-container');
+
+        // 更新字幕样式
+        function updateSubtitleStyle() {
+            const padding = document.getElementById('paddingControl').value;
+            const maxWidth = document.getElementById('maxWidthControl').value + '%';
+            const fontSize = document.getElementById('fontSizeControl').value;
+            const borderRadius = document.getElementById('borderRadiusControl').value;
+            const bottomOffset = document.getElementById('bottomOffsetControl').value + 'px';
+
+            // 使用setProperty来设置带!important的样式
+            subtitleBox.style.setProperty('padding', padding, 'important');
+            subtitleBox.style.setProperty('max-width', maxWidth, 'important');
+            subtitleBox.style.setProperty('font-size', fontSize, 'important');
+            subtitleBox.style.setProperty('border-radius', borderRadius, 'important');
+            subtitleContainer.style.setProperty('bottom', bottomOffset, 'important');
+
+            // 更新显示的当前设置
+            document.getElementById('currentPadding').textContent = padding;
+            document.getElementById('currentMaxWidth').textContent = maxWidth;
+            document.getElementById('currentFontSize').textContent = fontSize;
+            document.getElementById('currentBorderRadius').textContent = borderRadius;
+            document.getElementById('currentBottomOffset').textContent = bottomOffset;
+        }
+
+        // 更改字幕文本
+        function changeText(text) {
+            subtitleBox.textContent = text;
+        }
+
+        // 绑定事件监听器
+        document.getElementById('paddingControl').addEventListener('change', updateSubtitleStyle);
+        document.getElementById('maxWidthControl').addEventListener('input', function() {
+            document.getElementById('maxWidthValue').textContent = this.value + '%';
+            updateSubtitleStyle();
+        });
+        document.getElementById('fontSizeControl').addEventListener('change', updateSubtitleStyle);
+        document.getElementById('borderRadiusControl').addEventListener('change', updateSubtitleStyle);
+        document.getElementById('bottomOffsetControl').addEventListener('input', function() {
+            document.getElementById('bottomOffsetValue').textContent = this.value + 'px';
+            updateSubtitleStyle();
+        });
+
+        // 初始化
+        updateSubtitleStyle();
+    </script>
+</body>
+</html>

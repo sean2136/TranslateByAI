@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+</head>
+<body>
+    <h3>Chrome插件图标生成器</h3>
+    <p>请右键点击下面的图标并保存为对应的文件名：</p>
+    
+    <div style="margin: 20px 0;">
+        <h4>icon16.png (16x16)</h4>
+        <canvas id="icon16" width="16" height="16" style="border: 1px solid #ccc; image-rendering: pixelated; width: 64px; height: 64px;"></canvas>
+        <button onclick="downloadIcon('icon16', 16)">下载 icon16.png</button>
+    </div>
+    
+    <div style="margin: 20px 0;">
+        <h4>icon32.png (32x32)</h4>
+        <canvas id="icon32" width="32" height="32" style="border: 1px solid #ccc; image-rendering: pixelated; width: 64px; height: 64px;"></canvas>
+        <button onclick="downloadIcon('icon32', 32)">下载 icon32.png</button>
+    </div>
+    
+    <div style="margin: 20px 0;">
+        <h4>icon48.png (48x48)</h4>
+        <canvas id="icon48" width="48" height="48" style="border: 1px solid #ccc; image-rendering: pixelated; width: 96px; height: 96px;"></canvas>
+        <button onclick="downloadIcon('icon48', 48)">下载 icon48.png</button>
+    </div>
+    
+    <div style="margin: 20px 0;">
+        <h4>icon128.png (128x128)</h4>
+        <canvas id="icon128" width="128" height="128" style="border: 1px solid #ccc; width: 128px; height: 128px;"></canvas>
+        <button onclick="downloadIcon('icon128', 128)">下载 icon128.png</button>
+    </div>
+
+    <script>
+        function createIcon(size) {
+            const canvas = document.getElementById(`icon${size}`);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Create gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            // Draw background circle
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 - 1, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw video screen
+            const screenW = Math.floor(size * 0.6);
+            const screenH = Math.floor(size * 0.35);
+            const screenX = Math.floor((size - screenW) / 2);
+            const screenY = Math.floor(size * 0.25);
+            
+            // White background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(screenX, screenY, screenW, screenH);
+            
+            // Black screen
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillRect(screenX + 1, screenY + 1, screenW - 2, screenH - 2);
+            
+            // Play button (triangle)
+            if (size >= 32) {
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                const playSize = Math.floor(size * 0.15);
+                const playX = size/2 - playSize/3;
+                const playY = size/2 - playSize/2;
+                ctx.moveTo(playX, playY);
+                ctx.lineTo(playX, playY + playSize);
+                ctx.lineTo(playX + playSize, playY + playSize/2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            // Subtitle lines
+            if (size >= 24) {
+                const lineY = Math.floor(size * 0.7);
+                const lineW = Math.floor(size * 0.5);
+                const lineX = Math.floor((size - lineW) / 2);
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.fillRect(lineX, lineY, lineW, Math.max(1, Math.floor(size * 0.03)));
+                
+                if (size >= 32) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.fillRect(lineX + Math.floor(lineW * 0.2), lineY + Math.floor(size * 0.05), 
+                               Math.floor(lineW * 0.6), Math.max(1, Math.floor(size * 0.03)));
+                }
+            }
+            
+            // AI badge for larger icons
+            if (size >= 48) {
+                const badgeSize = Math.floor(size * 0.25);
+                const badgeX = size - badgeSize - 2;
+                const badgeY = 2;
+                
+                ctx.fillStyle = '#4CAF50';
+                ctx.beginPath();
+                ctx.arc(badgeX + badgeSize/2, badgeY + badgeSize/2, badgeSize/2, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `bold ${Math.floor(badgeSize * 0.5)}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('AI', badgeX + badgeSize/2, badgeY + badgeSize/2);
+            }
+        }
+        
+        function downloadIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = `icon${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Create all icons when page loads
+        window.onload = function() {
+            createIcon(16);
+            createIcon(32);
+            createIcon(48);
+            createIcon(128);
+        };
+    </script>
+</body>
+</html>

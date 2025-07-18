@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Video Translator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>AI Video Translator</h1>
+      <div class="toggle-container">
+        <label class="toggle">
+          <input type="checkbox" id="enableToggle">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">启用翻译</span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="section">
+        <h3>语言设置</h3>
+        <div class="form-group">
+          <label for="sourceLanguage">源语言:</label>
+          <select id="sourceLanguage">
+            <option value="auto">自动检测</option>
+            <option value="en">英语</option>
+            <option value="ja">日语</option>
+            <option value="ko">韩语</option>
+            <option value="es">西班牙语</option>
+            <option value="fr">法语</option>
+            <option value="de">德语</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="targetLanguage">目标语言:</label>
+          <select id="targetLanguage">
+            <option value="zh-CN">简体中文</option>
+            <option value="zh-TW">繁体中文</option>
+            <option value="en">英语</option>
+            <option value="ja">日语</option>
+            <option value="ko">韩语</option>
+            <option value="es">西班牙语</option>
+            <option value="fr">法语</option>
+            <option value="de">德语</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>字幕样式</h3>
+        <div class="form-group">
+          <label for="fontSize">字体大小:</label>
+          <select id="fontSize">
+            <option value="12px">小</option>
+            <option value="16px">中</option>
+            <option value="20px">大</option>
+            <option value="24px">特大</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="fontColor">字体颜色:</label>
+          <input type="color" id="fontColor" value="#ffffff">
+        </div>
+        
+        <div class="form-group">
+          <label for="backgroundColor">背景颜色:</label>
+          <input type="color" id="backgroundColor" value="#000000">
+        </div>
+        
+        <div class="form-group">
+          <label for="backgroundOpacity">背景透明度:</label>
+          <input type="range" id="backgroundOpacity" min="0" max="100" value="80">
+          <span id="opacityValue">80%</span>
+        </div>
+
+        <div class="form-group">
+          <label for="subtitlePosition">字幕位置:</label>
+          <select id="subtitlePosition">
+            <option value="bottom">底部</option>
+            <option value="top">顶部</option>
+            <option value="center">中央</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bottomOffset">底部偏移 (px):</label>
+          <input type="range" id="bottomOffset" min="20" max="200" value="60">
+          <span id="bottomOffsetValue">60px</span>
+          <small>调整字幕距离底部的距离，数值越小越靠近底部</small>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>API 设置</h3>
+        <div class="form-group">
+          <label for="apiProvider">翻译服务:</label>
+          <select id="apiProvider">
+            <option value="deepseek">DeepSeek</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="apiKey">API Key:</label>
+          <input type="password" id="apiKey" placeholder="输入您的 API Key">
+          <small id="apiKeyHelp">获取API Key: <a href="https://platform.deepseek.com" target="_blank">DeepSeek Platform</a></small>
+        </div>
+
+        <div class="form-group">
+          <button id="testTranslationButton" class="btn btn-secondary" type="button">测试翻译</button>
+          <small>测试API Key是否正常工作</small>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button id="saveButton" class="btn btn-primary">保存设置</button>
+      <div class="status" id="status"></div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
