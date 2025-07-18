@@ -305,6 +305,12 @@ class VideoTranslator {
   }
 
   setupSubtitleObservers() {
+    // Check if translation is enabled
+    if (!this.isEnabled) {
+      console.log('🚫 Translation disabled, skipping subtitle observer setup');
+      return;
+    }
+
     console.log('👀 Setting up subtitle observers...');
 
     // Strategy 1: Monitor caption window (current method)
@@ -522,6 +528,12 @@ class VideoTranslator {
   }
 
   async processCaptionText(text) {
+    // Check if translation is enabled
+    if (!this.isEnabled) {
+      console.log('🚫 Translation disabled, skipping caption processing');
+      return;
+    }
+
     if (!text || text.length < 2) {
       return; // Skip very short text
     }
@@ -629,6 +641,12 @@ class VideoTranslator {
 
   // Debounced translation to avoid too frequent API calls
   debouncedTranslate(text) {
+    // Check if translation is enabled
+    if (!this.isEnabled) {
+      console.log('🚫 Translation disabled, cancelling debounced translation');
+      return;
+    }
+
     // Clear existing timer
     if (this.translationDebounceTimer) {
       clearTimeout(this.translationDebounceTimer);
@@ -636,7 +654,12 @@ class VideoTranslator {
 
     // Set new timer
     this.translationDebounceTimer = setTimeout(() => {
-      this.processCaptionText(text);
+      // Double-check enabled status when timer fires
+      if (this.isEnabled) {
+        this.processCaptionText(text);
+      } else {
+        console.log('🚫 Translation disabled during debounce, skipping');
+      }
     }, 500); // 500ms debounce delay
   }
 
@@ -760,6 +783,12 @@ class VideoTranslator {
   async translateText(text) {
     console.log('🔄 Translating text:', text);
 
+    // Check if translation is enabled
+    if (!this.isEnabled) {
+      console.log('🚫 Translation disabled, aborting translation request');
+      throw new Error('Translation is disabled');
+    }
+
     // Refresh settings to get latest API key
     this.settings = await this.getSettings();
 
@@ -857,7 +886,9 @@ class VideoTranslator {
   }
   
   clearSubtitles() {
-    console.log('🧹 Clearing subtitles...');
+    console.log('🧹 Clearing subtitles and stopping all translation activities...');
+
+    // Clear subtitle display
     if (this.subtitleContainer) {
       this.subtitleContainer.innerHTML = '';
       console.log('✅ Subtitle container cleared');
@@ -871,6 +902,32 @@ class VideoTranslator {
         element.remove();
       }
     });
+
+    // Clear all timers
+    if (this.translationDebounceTimer) {
+      clearTimeout(this.translationDebounceTimer);
+      this.translationDebounceTimer = null;
+      console.log('⏰ Translation debounce timer cleared');
+    }
+
+    // Stop all subtitle observers
+    if (this.subtitleObservers && this.subtitleObservers.length > 0) {
+      this.subtitleObservers.forEach((observer, index) => {
+        if (observer && typeof observer.disconnect === 'function') {
+          observer.disconnect();
+          console.log(`👁️ Subtitle observer ${index} disconnected`);
+        }
+      });
+      this.subtitleObservers = [];
+    }
+
+    // Reset translation state
+    this.isTranslating = false;
+    this.lastCaptionText = '';
+    this.translationStartTime = 0;
+    this.translationQueue = [];
+
+    console.log('🛑 All translation activities stopped');
   }
   
   updateSubtitles() {
@@ -899,10 +956,13 @@ class VideoTranslator {
   handleMessage(request, sender, sendResponse) {
     switch (request.action) {
       case 'toggle':
+        console.log(`🔄 Toggle translation: ${request.enabled ? 'ON' : 'OFF'}`);
         this.isEnabled = request.enabled;
         if (this.isEnabled) {
+          console.log('✅ Starting translation...');
           this.startTranslation();
         } else {
+          console.log('🛑 Stopping translation...');
           this.clearSubtitles();
         }
         sendResponse({ success: true });
