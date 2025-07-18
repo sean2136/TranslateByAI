@@ -457,13 +457,11 @@ async function translateWithGemini(text, sourceLang, targetLang, apiKey) {
   // 使用最新的稳定模型列表，基于Google AI API文档
   console.log('📋 Using latest stable Gemini models');
   const models = [
-    'gemini-2.5-flash-lite-preview-06-17',  // 您指定的模型
     'gemini-2.0-flash',                     // 最新稳定版本
     'gemini-1.5-pro-002',                   // 稳定Pro版本
     'gemini-1.5-flash-002',                 // 稳定Flash版本
     'gemini-1.5-pro',                       // 标准Pro版本
-    'gemini-1.5-flash',                     // 标准Flash版本
-    'gemini-pro'                            // 传统版本备用
+    'gemini-1.5-flash'                      // 标准Flash版本
   ];
 
   let response;
@@ -486,7 +484,13 @@ async function translateWithGemini(text, sourceLang, targetLang, apiKey) {
       } else {
         const errorText = await response.text();
         console.log(`❌ Model ${model} failed:`, response.status, errorText);
-        lastError = new Error(`Model ${model} failed: ${response.status}`);
+
+        // Create more descriptive error message
+        if (response.status === 404) {
+          lastError = new Error(`模型 ${model} 不存在或已停用 (404)`);
+        } else {
+          lastError = new Error(getGeminiApiErrorMessage(response.status, errorText));
+        }
       }
     } catch (error) {
       console.log(`❌ Model ${model} error:`, error.message);
@@ -568,26 +572,45 @@ ${text}`;
 
 // Get Gemini API error messages
 function getGeminiApiErrorMessage(status, errorText) {
+  // First check for specific error messages in the response text
+  if (errorText) {
+    if (errorText.includes('model not found') || errorText.includes('Model not found')) {
+      return '🤖 Gemini模型不存在或已停用，请联系开发者更新';
+    }
+    if (errorText.includes('quota exceeded') || errorText.includes('rate limit')) {
+      return '⏱️ Gemini API配额已用完，请稍后再试';
+    }
+    if (errorText.includes('invalid api key') || errorText.includes('unauthorized')) {
+      return '🔑 Gemini API密钥无效，请检查您的API Key';
+    }
+  }
+
   switch (status) {
     case 400:
-      return 'Gemini API请求格式错误';
+      return '📝 Gemini API请求格式错误';
     case 401:
-      return 'Gemini API密钥无效或已过期';
+      return '🔑 Gemini API密钥无效或已过期';
     case 403:
-      return 'Gemini API访问被拒绝，请检查权限';
+      return '🚫 Gemini API访问被拒绝，请检查权限';
+    case 404:
+      return '🤖 Gemini模型不存在或已停用，插件将自动尝试其他模型';
     case 429:
-      return 'Gemini API请求频率过高，请稍后再试';
+      return '⏱️ Gemini API请求频率过高，请稍后再试';
     case 500:
     case 502:
     case 503:
     case 504:
-      return 'Gemini服务暂时不可用，请稍后再试';
+      return '🔧 Gemini服务暂时不可用，请稍后再试';
     default:
       try {
         const errorData = JSON.parse(errorText);
-        return errorData.error?.message || `Gemini API错误 (${status})`;
+        const message = errorData.error?.message || errorData.message;
+        if (message) {
+          return `❌ ${message}`;
+        }
+        return `❌ Gemini API错误 (${status})`;
       } catch {
-        return `Gemini API请求失败 (${status})`;
+        return `❌ Gemini API请求失败 (${status})`;
       }
   }
 }
