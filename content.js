@@ -28,8 +28,10 @@ class VideoTranslator {
 
     // Get settings from background
     this.settings = await this.getSettings();
-    this.isEnabled = this.settings.enabled;
+    // Default to enabled unless explicitly disabled
+    this.isEnabled = this.settings.enabled !== false;
     console.log('⚙️ Settings loaded:', this.settings);
+    console.log('🔄 Translation enabled:', this.isEnabled);
 
     // Wait for video element to load
     this.waitForVideo();
@@ -306,7 +308,7 @@ class VideoTranslator {
 
   setupSubtitleObservers() {
     // Check if translation is enabled
-    if (!this.isEnabled) {
+    if (this.isEnabled === false) {
       console.log('🚫 Translation disabled, skipping subtitle observer setup');
       return;
     }
@@ -529,7 +531,7 @@ class VideoTranslator {
 
   async processCaptionText(text) {
     // Check if translation is enabled
-    if (!this.isEnabled) {
+    if (this.isEnabled === false) {
       console.log('🚫 Translation disabled, skipping caption processing');
       return;
     }
@@ -642,7 +644,7 @@ class VideoTranslator {
   // Debounced translation to avoid too frequent API calls
   debouncedTranslate(text) {
     // Check if translation is enabled
-    if (!this.isEnabled) {
+    if (this.isEnabled === false) {
       console.log('🚫 Translation disabled, cancelling debounced translation');
       return;
     }
@@ -655,7 +657,7 @@ class VideoTranslator {
     // Set new timer
     this.translationDebounceTimer = setTimeout(() => {
       // Double-check enabled status when timer fires
-      if (this.isEnabled) {
+      if (this.isEnabled !== false) {
         this.processCaptionText(text);
       } else {
         console.log('🚫 Translation disabled during debounce, skipping');
@@ -784,8 +786,9 @@ class VideoTranslator {
     console.log('🔄 Translating text:', text);
 
     // Check if translation is enabled
-    if (!this.isEnabled) {
-      console.log('🚫 Translation disabled, aborting translation request');
+    console.log('🔍 Current isEnabled status:', this.isEnabled);
+    if (this.isEnabled === false) {
+      console.log('🚫 Translation explicitly disabled, aborting translation request');
       throw new Error('Translation is disabled');
     }
 
@@ -941,19 +944,30 @@ class VideoTranslator {
         // 安全检查chrome.runtime.lastError
         if (chrome.runtime.lastError) {
           console.error('❌ Error getting settings:', chrome.runtime.lastError);
-          resolve({});
+          // Return default settings if communication fails
+          resolve({
+            enabled: true, // Default to enabled
+            apiProvider: 'deepseek',
+            sourceLanguage: 'auto'
+          });
           return;
         }
 
-        // 确保返回有效的设置对象
+        // 确保返回有效的设置对象，并设置合理的默认值
         const settings = response || {};
-        console.log('⚙️ Settings loaded:', settings);
-        resolve(settings);
+        const defaultSettings = {
+          enabled: true, // Default to enabled
+          apiProvider: 'deepseek',
+          sourceLanguage: 'auto',
+          ...settings // Override with actual settings
+        };
+        console.log('⚙️ Settings loaded:', defaultSettings);
+        resolve(defaultSettings);
       });
     });
   }
   
-  handleMessage(request, sender, sendResponse) {
+  handleMessage(request, _sender, sendResponse) {
     switch (request.action) {
       case 'toggle':
         console.log(`🔄 Toggle translation: ${request.enabled ? 'ON' : 'OFF'}`);
