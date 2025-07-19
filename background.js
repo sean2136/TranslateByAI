@@ -25,7 +25,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 // Handle messages from content scripts
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   console.log('Background received message:', request);
   
   switch (request.action) {
@@ -419,6 +419,7 @@ async function translateWithGemini(text, sourceLang, targetLang, apiKey) {
   // Create optimized prompt for video subtitle translation
   const prompt = createGeminiTranslationPrompt(sourceLang, targetLang, text);
 
+  // Simplified request body to avoid 400 errors
   const requestBody = {
     contents: [{
       parts: [{
@@ -427,74 +428,84 @@ async function translateWithGemini(text, sourceLang, targetLang, apiKey) {
     }],
     generationConfig: {
       temperature: 0.2,
-      topK: 40,
-      topP: 0.9,
-      maxOutputTokens: 300,
-      candidateCount: 1
-    },
-    safetySettings: [
-      {
-        category: "HARM_CATEGORY_HARASSMENT",
-        threshold: "BLOCK_ONLY_HIGH"
-      },
-      {
-        category: "HARM_CATEGORY_HATE_SPEECH",
-        threshold: "BLOCK_ONLY_HIGH"
-      },
-      {
-        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        threshold: "BLOCK_ONLY_HIGH"
-      },
-      {
-        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-        threshold: "BLOCK_ONLY_HIGH"
-      }
-    ]
+      maxOutputTokens: 300
+    }
   };
+
+  console.log('📤 Gemini request body:', JSON.stringify(requestBody, null, 2));
 
   console.log('📤 Sending request to Gemini API');
 
   // 使用最新的稳定模型列表，基于Google AI API文档
   console.log('📋 Using latest stable Gemini models');
   const models = [
-    'gemini-2.0-flash',                     // 最新稳定版本
-    'gemini-1.5-pro-002',                   // 稳定Pro版本
-    'gemini-1.5-flash-002',                 // 稳定Flash版本
+    'gemini-1.5-flash',                     // 最稳定的版本
     'gemini-1.5-pro',                       // 标准Pro版本
-    'gemini-1.5-flash'                      // 标准Flash版本
+    'gemini-1.5-flash-002',                 // 稳定Flash版本
+    'gemini-1.5-pro-002'                    // 稳定Pro版本
   ];
+
+  // Try both API versions
+  const apiVersions = ['v1', 'v1beta'];
 
   let response;
   let lastError;
 
-  for (const model of models) {
-    try {
-      console.log(`🔄 Trying Gemini model: ${model}`);
-      response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      }, 2);
+  // Try different API versions and models
+  outerLoop: for (const apiVersion of apiVersions) {
+    for (const model of models) {
+      try {
+        console.log(`🔄 Trying Gemini model: ${model} with API version: ${apiVersion}`);
+        const apiUrl = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiKey}`;
+        console.log(`📡 API URL: ${apiUrl}`);
 
-      if (response.ok) {
-        console.log(`✅ Successfully using model: ${model}`);
-        break;
-      } else {
+        response = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
+        }, 2);
+
+        if (response.ok) {
+          console.log(`✅ Successfully using model: ${model} with API version: ${apiVersion}`);
+          break outerLoop;
+        } else {
         const errorText = await response.text();
         console.log(`❌ Model ${model} failed:`, response.status, errorText);
 
-        // Create more descriptive error message
-        if (response.status === 404) {
-          lastError = new Error(`模型 ${model} 不存在或已停用 (404)`);
-        } else {
-          lastError = new Error(getGeminiApiErrorMessage(response.status, errorText));
+        // Enhanced error logging for debugging
+        console.log('🔍 Detailed error info:', {
+          model: model,
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          errorText: errorText
+        });
+
+        // Try to parse error response for more details
+        try {
+          const errorData = JSON.parse(errorText);
+          console.log('📋 Parsed error data:', errorData);
+          if (errorData.error && errorData.error.message) {
+            lastError = new Error(`Gemini API Error: ${errorData.error.message}`);
+          } else {
+            lastError = new Error(getGeminiApiErrorMessage(response.status, errorText));
+          }
+        } catch (parseError) {
+          console.log('⚠️ Could not parse error response as JSON');
+          // Create more descriptive error message
+          if (response.status === 404) {
+            lastError = new Error(`模型 ${model} 不存在或已停用 (404)`);
+          } else {
+            lastError = new Error(getGeminiApiErrorMessage(response.status, errorText));
+          }
         }
       }
-    } catch (error) {
-      console.log(`❌ Model ${model} error:`, error.message);
-      lastError = error;
+      } catch (error) {
+        console.log(`❌ Model ${model} with API version ${apiVersion} error:`, error.message);
+        lastError = error;
+      }
     }
   }
 
