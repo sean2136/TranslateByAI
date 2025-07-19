@@ -944,10 +944,9 @@ class VideoTranslator {
         // 安全检查chrome.runtime.lastError
         if (chrome.runtime.lastError) {
           console.error('❌ Error getting settings:', chrome.runtime.lastError);
-          // Return default settings if communication fails
+          // Return minimal default settings if communication fails
           resolve({
             enabled: true, // Default to enabled
-            apiProvider: 'deepseek',
             sourceLanguage: 'auto'
           });
           return;
@@ -957,7 +956,6 @@ class VideoTranslator {
         const settings = response || {};
         const defaultSettings = {
           enabled: true, // Default to enabled
-          apiProvider: 'deepseek',
           sourceLanguage: 'auto',
           ...settings // Override with actual settings
         };
